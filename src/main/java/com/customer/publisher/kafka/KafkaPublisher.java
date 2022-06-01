@@ -10,73 +10,51 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
-
-import com.customer.publisher.domain.CustomerRequest;
 import com.customer.publisher.domain.ErrorResponse;
 import com.customer.publisher.domain.SucessResponse;
+import com.customer.publisher.kafka.dto.CustomerDto;
 
 @Configuration
 public class KafkaPublisher {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(KafkaPublisher.class);
+  private static final Logger LOG = LoggerFactory.getLogger(KafkaPublisher.class);
 
-	@Autowired
-	private KafkaTemplate<String, CustomerRequest> kafkaTemplate;
+  @Autowired
+  private KafkaTemplate<String, CustomerDto> kafkaTemplate;
 
-	@Autowired
-	private KafkaTemplate<String, String> kafkaStringTemplate;
+  private ResponseEntity<?> response = null;
 
-	private ResponseEntity<?> response = null;
+  public ResponseEntity<?> publishMessage(String topic, CustomerDto customerDto) {
+    LOG.info("********Kafka Topic************ {}", topic);
+    LOG.info("*******Kafka JsonMesg************* {}", customerDto);
 
-	public ResponseEntity<?> publishMessage(String topic,
-			CustomerRequest object) {
-		LOG.info("topic {}", topic);
-		LOG.info("jsonMessage {}", object);
+    ListenableFuture<SendResult<String, CustomerDto>> listenableFuture =
+        kafkaTemplate.send(topic, customerDto);
 
-		ListenableFuture<SendResult<String, CustomerRequest>> listenableFuture = kafkaTemplate
-				.send(topic, object);
+    listenableFuture.addCallback(new ListenableFutureCallback<SendResult<String, CustomerDto>>() {
 
-		listenableFuture.addCallback(
-				new ListenableFutureCallback<SendResult<String, CustomerRequest>>() {
-
-					@Override
-					public void onSuccess(
-							final SendResult<String, CustomerRequest> object) {
-						SucessResponse sucessResponse = new SucessResponse();
-						sucessResponse.setStatus("sucess");
-						sucessResponse.setMessage("Post message successfully");
-						LOG.info("sent message= " + object);
-						response = new ResponseEntity<>(sucessResponse,
-								HttpStatus.OK);
-					}
+      @Override
+      public void onSuccess(final SendResult<String, CustomerDto> object) {
+        SucessResponse sucessResponse = new SucessResponse();
+        sucessResponse.setStatus("sucess");
+        sucessResponse.setMessage("Post message successfully");
+        LOG.info("******MESSAGE SENT TO KAFKA SUCCESSFULL******* " + object);
+        response = new ResponseEntity<>(sucessResponse, HttpStatus.OK);
+      }
 
 
-					@Override
-					public void onFailure(final Throwable throwable) {
-						ErrorResponse errorResponse = new ErrorResponse();
-						errorResponse.setStatus("failed");
-						errorResponse
-								.setMessage("Message failed to kafka topic");
-						errorResponse.errorType(
-								throwable.getClass().getSimpleName());
-						System.out.println(object);
-						response = new ResponseEntity<>(errorResponse,
-								HttpStatus.INTERNAL_SERVER_ERROR);
-						LOG.error("unable to send message= " + object,
-								throwable);
+      @Override
+      public void onFailure(final Throwable throwable) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus("failed");
+        errorResponse.setMessage("Message failed to kafka topic");
+        errorResponse.errorType(throwable.getClass().getSimpleName());
+        LOG.error("**** KAFKA ERROR*****NOT ABLE TO SEND MESSAGE******" + customerDto, throwable);
+        response = new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 
-					}
-				});
-		kafkaTemplate.flush();
-		return response;
-	}
-
-	public void publishMessage(String topic, String object) {
-		LOG.info("topic {}", topic);
-		LOG.info("jsonMessage {}", object);
-
-		kafkaStringTemplate.send(topic, object);
-	}
-
+      }
+    });
+    kafkaTemplate.flush();
+    return response;
+  }
 }

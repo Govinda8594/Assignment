@@ -10,12 +10,4 @@ public interface PublisherService {
 
 	ResponseEntity<?> create(@Valid CustomerRequest customer);
 
-	void sendString(String customer);
-
-	// Object deleteCustomer(String firstName);
-	//
-	// Object getCustomerByName(String firstName);
-	//
-	// Object updateCustomer(String firstName, @Valid CustomerRequest body);
-
 }

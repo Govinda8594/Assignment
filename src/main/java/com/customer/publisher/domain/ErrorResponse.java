@@ -13,10 +13,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * ErrorModel
  */
 @Validated
-// @javax.annotation.Generated(value =
-// "io.swagger.codegen.v3.generators.java.SpringCodegen", date =
-// "2022-05-20T06:00:47.050Z[GMT]")
-
 public class ErrorResponse {
 
 	@JsonProperty("status")
@@ -38,9 +34,7 @@ public class ErrorResponse {
 	 * 
 	 * @return status
 	 **/
-	// @Schema(required = true, description = "")
-	@NotNull
-
+	
 	public String getStatus() {
 		return status;
 	}
@@ -59,8 +53,6 @@ public class ErrorResponse {
 	 * 
 	 * @return message
 	 **/
-	// @Schema(required = true, description = "")
-	@NotNull
 
 	public String getMessage() {
 		return message;
@@ -80,8 +72,6 @@ public class ErrorResponse {
 	 * 
 	 * @return errorType
 	 **/
-	// @Schema(required = true, description = "")
-	@NotNull
 
 	public String getErrorType() {
 		return errorType;

@@ -31,7 +31,6 @@ public class AddressRequest {
 	 * 
 	 * @return id
 	 **/
-	// @Schema(required = true, description = "")
 
 	public Long getId() {
 		return id;
@@ -51,7 +50,6 @@ public class AddressRequest {
 	 * 
 	 * @return addressLine1
 	 **/
-	// @Schema(description = "")
 
 	public String getAddressLine1() {
 		return addressLine1;
@@ -71,7 +69,6 @@ public class AddressRequest {
 	 * 
 	 * @return addressLine2
 	 **/
-	// @Schema(description = "")
 
 	public String getAddressLine2() {
 		return addressLine2;
@@ -91,7 +88,6 @@ public class AddressRequest {
 	 * 
 	 * @return street
 	 **/
-	// @Schema(description = "")
 
 	public String getStreet() {
 		return street;
@@ -111,7 +107,6 @@ public class AddressRequest {
 	 * 
 	 * @return postalCode
 	 **/
-	// @Schema(required = true, description = "")
 
 	public String getPostalCode() {
 		return postalCode;
